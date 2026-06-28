@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow - Premium Task Manager</title>
+  <!-- Google Fonts for premium typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <!-- FontAwesome for professional icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="taskManager.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Main Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo">
+          <i class="fa-regular fa-square-check logo-icon"></i>
+          <span class="logo-text">TaskFlow</span>
+        </div>
+        <nav class="nav-menu">
+          <a href="#" class="nav-item active"><i class="fa-solid fa-border-all"></i>Board</a>
+          <a href="#" class="nav-item"><i class="fa-regular fa-calendar"></i>Calendar</a>
+          <a href="#" class="nav-item"><i class="fa-solid fa-chart-simple"></i>Analytics</a>
+          <a href="#" class="nav-item"><i class="fa-solid fa-gear"></i>Settings</a>
+        </nav>
+      </div>
+
+      <div class="header-right">
+        <div class="search-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" class="search-input" placeholder="Search tasks...">
+        </div>
+        <button class="notification-btn">
+          <i class="fa-regular fa-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+        <div class="profile-avatar">
+          <!-- Premium Placeholder Avatar Image -->
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80"
+            alt="User Profile" class="avatar-img">
+        </div>
+      </div>
+    </header>
+
+    <!-- Toolbar / Board Subheader -->
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="dropdown-wrapper">
+          <button class="toolbar-btn dropdown-btn">
+            <i class="fa-regular fa-folder-open"></i> All Tasks <i class="fa-solid fa-chevron-down arrow-icon"></i>
+          </button>
+        </div>
+        <button class="toolbar-btn">
+          <i class="fa-solid fa-sliders"></i> Filter
+        </button>
+      </div>
+      <div class="toolbar-right">
+        <div class="view-toggle">
+          <button class="toggle-btn active"><i class="fa-solid fa-border-all"></i> Board</button>
+          <button class="toggle-btn"><i class="fa-solid fa-list"></i> List</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Kanban Board -->
+    <main class="kanban-board">
+
+      <!-- COLUMN: TODO -->
+      <div class="board-column todo-column">
+        <div class="column-header">
+          <div class="column-title-wrapper">
+            <h2 class="column-title">Todo</h2>
+            <span class="task-count-badge todo-badge">6</span>
+          </div>
+          <button class="column-options-btn"><i class="fa-solid fa-ellipsis"></i></button>
+        </div>
+
+        <div class="task-list">
+          <!-- Task Card 1 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Design landing page</h3>
+              <p class="task-desc">Create a modern and responsive landing page for the product.</p>
+              <div class="card-footer">
+                <span class="priority-tag high">High</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 24, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 2 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">User research</h3>
+              <p class="task-desc">Interview users and analyze feedback to improve UX.</p>
+              <div class="card-footer">
+                <span class="priority-tag medium">Medium</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 26, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 3 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Setup analytics</h3>
+              <p class="task-desc">Integrate Google Analytics and track key metrics.</p>
+              <div class="card-footer">
+                <span class="priority-tag low">Low</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 28, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 4 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Competitor analysis</h3>
+              <p class="task-desc">Analyze competitors and create a SWOT report.</p>
+              <div class="card-footer">
+                <span class="priority-tag medium">Medium</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 30, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="add-task-btn"><i class="fa-solid fa-plus"></i> Add Task</button>
+      </div>
+
+      <!-- COLUMN: IN PROGRESS -->
+      <div class="board-column progress-column">
+        <div class="column-header">
+          <div class="column-title-wrapper">
+            <h2 class="column-title">In Progress</h2>
+            <span class="task-count-badge progress-badge">4</span>
+          </div>
+          <button class="column-options-btn"><i class="fa-solid fa-ellipsis"></i></button>
+        </div>
+
+        <div class="task-list">
+          <!-- Task Card 1 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Build authentication</h3>
+              <p class="task-desc">Implement email/password authentication flow.</p>
+              <div class="card-footer">
+                <span class="priority-tag high">High</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 23, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 2 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">API integration</h3>
+              <p class="task-desc">Connect backend APIs and handle error responses.</p>
+              <div class="card-footer">
+                <span class="priority-tag medium">Medium</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 25, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 3 (Highlighted style as seen in screenshot) -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Create dashboards</h3>
+              <p class="task-desc">Design and build analytics dashboards.</p>
+              <div class="card-footer">
+                <span class="priority-tag low">Low</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 27, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 4 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Optimize performance</h3>
+              <p class="task-desc">Improve page load speed and performance metrics.</p>
+              <div class="card-footer">
+                <span class="priority-tag high">High</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 29, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="add-task-btn"><i class="fa-solid fa-plus"></i> Add Task</button>
+      </div>
+
+      <!-- COLUMN: DONE -->
+      <div class="board-column done-column">
+        <div class="column-header">
+          <div class="column-title-wrapper">
+            <h2 class="column-title">Done</h2>
+            <span class="task-count-badge done-badge">5</span>
+          </div>
+          <button class="column-options-btn"><i class="fa-solid fa-ellipsis"></i></button>
+        </div>
+
+        <div class="task-list">
+          <!-- Task Card 1 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Project setup</h3>
+              <p class="task-desc">Initialize project repository and setup environment.</p>
+              <div class="card-footer">
+                <span class="priority-tag low">Low</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 18, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 2 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Wireframe design</h3>
+              <p class="task-desc">Create wireframes for key pages and flows.</p>
+              <div class="card-footer">
+                <span class="priority-tag medium">Medium</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 19, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 3 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">Database schema</h3>
+              <p class="task-desc">Design database schema and relationships.</p>
+              <div class="card-footer">
+                <span class="priority-tag low">Low</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 20, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Card 4 -->
+          <div class="task-card">
+            <div class="card-drag-handle">
+              <i class="fa-solid fa-grip-vertical"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="task-title">UI kit setup</h3>
+              <p class="task-desc">Setup global UI kit and design system.</p>
+              <div class="card-footer">
+                <span class="priority-tag low">Low</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> May 21, 2025</span>
+                <div class="card-actions">
+                  <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                  <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="add-task-btn"><i class="fa-solid fa-plus"></i> Add Task</button>
+      </div>
+
+    </main>
+
+    <!-- Floating action button at bottom left -->
+    <button class="floating-new-task-btn">
+      <i class="fa-solid fa-plus"></i> New Task
+    </button>
+  </div>
+
+  <!-- Task Input Modal Overlay -->
+  <div class="modal-overlay" id="taskModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Create New Task</h2>
+        <button class="modal-close-btn" id="closeModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="taskForm" class="modal-form">
+        <!-- Hidden input to track which column triggered the modal -->
+        <input type="hidden" id="taskColumnId" value="">
+
+        <div class="form-group">
+          <label for="inputTitle">Task Title</label>
+          <input type="text" id="inputTitle" placeholder="e.g., Design landing page" required autocomplete="off">
+        </div>
+
+        <div class="form-group">
+          <label for="inputDesc">Description</label>
+          <textarea id="inputDesc" rows="3" placeholder="Briefly describe the task..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPriority">Priority</label>
+          <select id="inputPriority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="modal-btn cancel-btn" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="modal-btn submit-btn">Create Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="taskManager.js"></script>
+</body>
+
+</html>
