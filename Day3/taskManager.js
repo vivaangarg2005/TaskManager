@@ -274,5 +274,23 @@ function getDragAfterElement(container, y) {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
+const search = document.querySelector(".search-input");
+search.addEventListener("input", (e) => {
+
+    const cards = document.querySelectorAll(".task-card");
+    const query = e.target.value.toLowerCase().trim();
+    cards.forEach((card) => {
+
+        const taskTitle = card.querySelector(".task-title").innerText.toLowerCase();
+        const taskDesc = card.querySelector(".task-desc").innerText.toLowerCase();
+        const isMatch = taskTitle.includes(query) || taskDesc.includes(query);
+        if (isMatch) {
+            card.style.display = "";
+        }
+        else {
+            card.style.display = "none";
+        }
+    });
+})
 
 
