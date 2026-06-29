@@ -88,6 +88,7 @@ taskForm.addEventListener("submit", (e) => {
     // 4. Create the task card element
     let taskCard = document.createElement("div");
     taskCard.className = "task-card";
+    taskCard.setAttribute("draggable", "true");
     taskCard.innerHTML = `
         <div class="card-drag-handle">
             <i class="fa-solid fa-grip-vertical"></i>
@@ -110,6 +111,43 @@ taskForm.addEventListener("submit", (e) => {
     taskList.appendChild(taskCard);
     closeModal();
 });
+// Helper function to put a card in Edit Mode
+function editCard(card) {
+    if (!card) return;
+    const title = card.querySelector(".task-title");
+    const desc = card.querySelector(".task-desc");
+    const span = card.querySelector(".priority-tag");
+    const editBtn = card.querySelector(".edit-btn");
+    const icon = editBtn.querySelector("i");
+
+    card.classList.add("editing");
+    card.setAttribute("draggable", "false");
+
+    title.contentEditable = "true";
+    desc.contentEditable = "true";
+    title.focus();
+    icon.className = "fa-solid fa-check";
+    span.style.cursor = "pointer";
+}
+
+// Helper function to Save and Lock a card
+function saveCard(card) {
+    if (!card) return;
+    const title = card.querySelector(".task-title");
+    const desc = card.querySelector(".task-desc");
+    const span = card.querySelector(".priority-tag");
+    const editBtn = card.querySelector(".edit-btn");
+    const icon = editBtn.querySelector("i");
+
+    card.classList.remove("editing");
+    card.setAttribute("draggable", "true");
+
+    title.contentEditable = "false";
+    desc.contentEditable = "false";
+    icon.className = "fa-solid fa-pencil";
+    span.style.cursor = "";
+}
+
 // 1. Select the entire Kanban Board container
 const board = document.querySelector(".kanban-board");
 
@@ -120,6 +158,12 @@ board.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-btn");
     const priorityTag = e.target.closest(".priority-tag");
 
+    // 0. Auto-save if clicking outside the card that is currently being edited
+    const editingCard = document.querySelector(".task-card.editing");
+    if (editingCard && !editingCard.contains(e.target)) {
+        saveCard(editingCard);
+    }
+
     // 1. Handle Delete Button Click
     if (deleteBtn) {
         if (card) card.remove();
@@ -129,26 +173,11 @@ board.addEventListener("click", (e) => {
     // 2. Handle Edit Button Click
     if (editBtn) {
         if (card) {
-            const title = card.querySelector(".task-title");
-            const desc = card.querySelector(".task-desc");
-            const span = card.querySelector(".priority-tag");
-            const icon = editBtn.querySelector("i");
-
-            const isEditing = card.classList.toggle("editing");
-
+            const isEditing = card.classList.contains("editing");
             if (isEditing) {
-                // Enter edit mode
-                title.contentEditable = "true";
-                desc.contentEditable = "true";
-                title.focus();
-                icon.className = "fa-solid fa-check";
-                span.style.cursor = "pointer";
+                saveCard(card);
             } else {
-                // Save and exit edit mode
-                title.contentEditable = "false";
-                desc.contentEditable = "false";
-                icon.className = "fa-solid fa-pencil";
-                span.style.cursor = "";
+                editCard(card);
             }
         }
         return;
@@ -186,7 +215,64 @@ board.addEventListener("keydown", (e) => {
             if (editBtn) editBtn.click(); // Trigger the edit save logic
         }
     }
+}
+);
+
+// --- DRAG AND DROP FUNCTIONALITY ---
+
+// 1. Make existing cards draggable on script load
+document.querySelectorAll(".task-card").forEach(card => {
+    card.setAttribute("draggable", "true");
 });
+
+// 2. Drag Start and Drag End events on the board (Event Delegation)
+board.addEventListener("dragstart", (e) => {
+    const card = e.target.closest(".task-card");
+    // Make sure we aren't dragging inputs/buttons inside the card
+    if (card && !card.classList.contains("editing")) {
+        card.classList.add("dragging");
+    }
+
+});
+
+board.addEventListener("dragend", (e) => {
+    const card = e.target.closest(".task-card");
+    if (card) {
+        card.classList.remove("dragging");
+    }
+});
+
+// 3. Drop zones (task lists in each column)
+const taskLists = document.querySelectorAll(".task-list");
+taskLists.forEach(taskList => {
+    taskList.addEventListener("dragover", (e) => {
+        e.preventDefault(); // Crucial: Allows dropping!
+        const draggingCard = document.querySelector(".task-card.dragging");
+        if (draggingCard) {
+            const afterElement = getDragAfterElement(taskList, e.clientY);
+            if (afterElement == null) {
+                taskList.appendChild(draggingCard);
+            } else {
+                taskList.insertBefore(draggingCard, afterElement);
+            }
+        }
+    });
+});
+
+// Helper function to find the slot where the card should be inserted
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll(".task-card:not(.dragging)")];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
 
 
