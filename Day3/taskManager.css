@@ -877,3 +877,15 @@ button {
   background-color: #f8fafc;
   margin: 12px 0;
 }
+
+/* In-place edit counters */
+.title-char-counter,
+.desc-word-counter {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-top: 4px;
+  margin-bottom: 8px;
+  text-align: right;
+  display: block;
+}

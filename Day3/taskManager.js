@@ -19,9 +19,15 @@ function openModal(columnType) {
     taskColumnId.value = columnType; // Store which column (todo, progress, done) is targeted
     taskModal.classList.add("active");
     inputTitle.focus();
+
+    // Reset modal character and word counters
+    const titleCharCount = document.getElementById("titleCharCount");
+    if (titleCharCount) titleCharCount.innerText = "0/100";
+    
+    const descWordCount = document.getElementById("descWordCount");
+    if (descWordCount) descWordCount.innerText = "0/100 words";
 }
 
-// Function to close modal and reset form inputs
 function closeModal() {
     taskModal.classList.remove("active");
     taskForm.reset();
@@ -141,6 +147,27 @@ function editCard(card) {
     title.focus();
     icon.className = "fa-solid fa-check";
     span.style.cursor = "pointer";
+
+    // Show/create Title Character Counter
+    let titleCounter = card.querySelector(".title-char-counter");
+    if (!titleCounter) {
+        titleCounter = document.createElement("span");
+        titleCounter.className = "title-char-counter";
+        title.parentNode.insertBefore(titleCounter, title.nextSibling);
+    }
+    titleCounter.innerText = `${title.innerText.length}/100`;
+    titleCounter.style.display = "block";
+
+    // Show/create Description Word Counter
+    let descCounter = card.querySelector(".desc-word-counter");
+    if (!descCounter) {
+        descCounter = document.createElement("span");
+        descCounter.className = "desc-word-counter";
+        desc.parentNode.insertBefore(descCounter, desc.nextSibling);
+    }
+    const descWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
+    descCounter.innerText = `${descWords.length}/100 words`;
+    descCounter.style.display = "block";
 }
 
 // Helper function to Save and Lock a card
@@ -152,22 +179,20 @@ function saveCard(card) {
     const editBtn = card.querySelector(".edit-btn");
     const icon = editBtn.querySelector("i");
 
-    const titleText = title.innerText.trim();
-    const descText = desc.innerText.trim();
+    let titleText = title.innerText.trim();
+    let descText = desc.innerText.trim();
 
-    // Validate Title length (max 100 characters)
+    // Silent truncation for Title (max 100 characters)
     if (titleText.length > 100) {
-        alert("Title cannot exceed 100 characters.");
-        title.focus();
-        return false;
+        titleText = titleText.substring(0, 100);
+        title.innerText = titleText;
     }
 
-    // Validate Description word count (max 100 words)
+    // Silent truncation for Description (max 100 words)
     const descWords = descText.split(/\s+/).filter(w => w.length > 0);
     if (descWords.length > 100) {
-        alert("Description cannot exceed 100 words.");
-        desc.focus();
-        return false;
+        descText = descWords.slice(0, 100).join(" ");
+        desc.innerText = descText;
     }
 
     card.classList.remove("editing");
@@ -177,6 +202,14 @@ function saveCard(card) {
     desc.contentEditable = "false";
     icon.className = "fa-solid fa-pencil";
     span.style.cursor = "";
+
+    // Hide the counters
+    const titleCounter = card.querySelector(".title-char-counter");
+    if (titleCounter) titleCounter.style.display = "none";
+
+    const descCounter = card.querySelector(".desc-word-counter");
+    if (descCounter) descCounter.style.display = "none";
+
     return true;
 }
 
@@ -337,6 +370,170 @@ function applyFilters() {
 search.addEventListener("input", applyFilters);
 priorityFilter.addEventListener("input", applyFilters);
 
+// --- MODAL COUNTERS AND INPUT LIMITS ---
+inputTitle.addEventListener("input", () => {
+    const titleCharCount = document.getElementById("titleCharCount");
+    if (titleCharCount) {
+        titleCharCount.innerText = `${inputTitle.value.length}/100`;
+    }
+});
+
+inputDesc.addEventListener("keydown", (e) => {
+    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape"];
+    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
+        return;
+    }
+
+    const descWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
+    if (descWords.length >= 100) {
+        const selection = window.getSelection();
+        const selectedText = selection ? selection.toString() : "";
+        if (!selectedText) {
+            if (e.key === " " || e.key === "Enter") {
+                e.preventDefault();
+            }
+        }
+    }
+});
+
+inputDesc.addEventListener("input", () => {
+    const descWordCount = document.getElementById("descWordCount");
+    const descWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
+    if (descWordCount) {
+        descWordCount.innerText = `${descWords.length}/100 words`;
+    }
+});
+
+inputDesc.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text');
+    const selection = window.getSelection();
+    const selectedText = selection ? selection.toString() : "";
+    
+    const descWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
+    const currentWordCount = descWords.length;
+    const remainingWords = 100 - (currentWordCount - (selectedText.trim().split(/\s+/).filter(w => w.length > 0).length));
+    if (remainingWords > 0) {
+        const wordsInPaste = text.trim().split(/\s+/).filter(w => w.length > 0);
+        const allowedPasteWords = wordsInPaste.slice(0, remainingWords).join(" ");
+        
+        const start = inputDesc.selectionStart;
+        const end = inputDesc.selectionEnd;
+        const val = inputDesc.value;
+        inputDesc.value = val.substring(0, start) + allowedPasteWords + val.substring(end);
+        inputDesc.selectionStart = inputDesc.selectionEnd = start + allowedPasteWords.length;
+        
+        const descWordCount = document.getElementById("descWordCount");
+        const updatedWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
+        if (descWordCount) {
+            descWordCount.innerText = `${updatedWords.length}/100 words`;
+        }
+    }
+});
+
+// --- IN-PLACE CARD COUNTERS AND INPUT LIMITS (EVENT DELEGATION) ---
+board.addEventListener("input", (e) => {
+    const card = e.target.closest(".task-card");
+    if (!card || !card.classList.contains("editing")) return;
+
+    if (e.target.classList.contains("task-title")) {
+        const title = e.target;
+        const titleCounter = card.querySelector(".title-char-counter");
+        if (titleCounter) {
+            titleCounter.innerText = `${title.innerText.length}/100`;
+        }
+    } else if (e.target.classList.contains("task-desc")) {
+        const desc = e.target;
+        const descWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
+        const descCounter = card.querySelector(".desc-word-counter");
+        if (descCounter) {
+            descCounter.innerText = `${descWords.length}/100 words`;
+        }
+    }
+});
+
+board.addEventListener("keydown", (e) => {
+    const card = e.target.closest(".task-card");
+    if (!card || !card.classList.contains("editing")) return;
+
+    if (e.target.classList.contains("task-title")) {
+        const title = e.target;
+        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape", "Enter"];
+        if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        const selection = window.getSelection();
+        const selectedText = selection ? selection.toString() : "";
+        if (title.innerText.length - selectedText.length >= 100) {
+            e.preventDefault();
+        }
+    } else if (e.target.classList.contains("task-desc")) {
+        const desc = e.target;
+        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape"];
+        if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
+            return;
+        }
+
+        const descWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
+        if (descWords.length >= 100) {
+            const selection = window.getSelection();
+            const selectedText = selection ? selection.toString() : "";
+            if (!selectedText) {
+                if (e.key === " " || e.key === "Enter") {
+                    e.preventDefault();
+                }
+            }
+        }
+    }
+});
+
+board.addEventListener("paste", (e) => {
+    const card = e.target.closest(".task-card");
+    if (!card || !card.classList.contains("editing")) return;
+
+    if (e.target.classList.contains("task-title")) {
+        e.preventDefault();
+        const title = e.target;
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        const selection = window.getSelection();
+        const selectedText = selection ? selection.toString() : "";
+        const currentLength = title.innerText.length - selectedText.length;
+        const remaining = 100 - currentLength;
+        if (remaining > 0) {
+            const truncated = text.substring(0, remaining);
+            document.execCommand("insertText", false, truncated);
+            
+            const titleCounter = card.querySelector(".title-char-counter");
+            if (titleCounter) {
+                titleCounter.innerText = `${title.innerText.length}/100`;
+            }
+        }
+    } else if (e.target.classList.contains("task-desc")) {
+        e.preventDefault();
+        const desc = e.target;
+        const text = (e.clipboardData || window.clipboardData).getData('text');
+        const selection = window.getSelection();
+        const selectedText = selection ? selection.toString() : "";
+        
+        const currentText = desc.innerText;
+        const wordsInPaste = text.trim().split(/\s+/).filter(w => w.length > 0);
+        const wordsInDesc = currentText.trim().split(/\s+/).filter(w => w.length > 0);
+        const selectedWordsLength = selectedText.trim().split(/\s+/).filter(w => w.length > 0).length;
+        
+        const remainingWords = 100 - (wordsInDesc.length - selectedWordsLength);
+        if (remainingWords > 0) {
+            const allowedPasteWords = wordsInPaste.slice(0, remainingWords).join(" ");
+            document.execCommand("insertText", false, allowedPasteWords);
+            
+            const descCounter = card.querySelector(".desc-word-counter");
+            if (descCounter) {
+                const updatedWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
+                descCounter.innerText = `${updatedWords.length}/100 words`;
+            }
+        }
+    }
+});
 
 document.querySelectorAll(".board-column").forEach(column => {
     const taskList = column.querySelector(".task-list");
