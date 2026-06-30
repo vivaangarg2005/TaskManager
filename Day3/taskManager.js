@@ -73,6 +73,17 @@ taskForm.addEventListener("submit", (e) => {
     let priority = inputPriority.value;
     let targetColType = taskColumnId.value || "todo";
 
+    // Validation
+    if (title.length > 100) {
+        alert("Title cannot exceed 100 characters.");
+        return;
+    }
+    const descWords = desc.split(/\s+/).filter(w => w.length > 0);
+    if (descWords.length > 100) {
+        alert("Description cannot exceed 100 words.");
+        return;
+    }
+
     // 2. Generate today's date dynamically (e.g. "Jun 27, 2026")
     let today = new Date();
     let formattedDate = today.toLocaleDateString("en-US", {
@@ -134,12 +145,30 @@ function editCard(card) {
 
 // Helper function to Save and Lock a card
 function saveCard(card) {
-    if (!card) return;
+    if (!card) return false;
     const title = card.querySelector(".task-title");
     const desc = card.querySelector(".task-desc");
     const span = card.querySelector(".priority-tag");
     const editBtn = card.querySelector(".edit-btn");
     const icon = editBtn.querySelector("i");
+
+    const titleText = title.innerText.trim();
+    const descText = desc.innerText.trim();
+
+    // Validate Title length (max 100 characters)
+    if (titleText.length > 100) {
+        alert("Title cannot exceed 100 characters.");
+        title.focus();
+        return false;
+    }
+
+    // Validate Description word count (max 100 words)
+    const descWords = descText.split(/\s+/).filter(w => w.length > 0);
+    if (descWords.length > 100) {
+        alert("Description cannot exceed 100 words.");
+        desc.focus();
+        return false;
+    }
 
     card.classList.remove("editing");
     card.setAttribute("draggable", "true");
@@ -148,6 +177,7 @@ function saveCard(card) {
     desc.contentEditable = "false";
     icon.className = "fa-solid fa-pencil";
     span.style.cursor = "";
+    return true;
 }
 
 // 1. Select the entire Kanban Board container
@@ -180,7 +210,8 @@ board.addEventListener("click", (e) => {
         if (card) {
             const isEditing = card.classList.contains("editing");
             if (isEditing) {
-                saveCard(card);
+                const saved = saveCard(card);
+                if (!saved) return; // Stop if validation failed
             } else {
                 editCard(card);
             }
