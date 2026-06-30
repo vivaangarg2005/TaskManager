@@ -813,6 +813,14 @@ button {
 }
 
 /* In-place editing styles */
+.task-card.editing {
+  cursor: default;
+}
+
+.task-card.editing .card-drag-handle {
+  cursor: default;
+}
+
 .task-card.editing .task-title,
 .task-card.editing .task-desc {
   outline: none;
@@ -820,6 +828,7 @@ button {
   padding: 4px 6px;
   border-radius: var(--radius-sm);
   border: 1px dashed var(--color-primary);
+  cursor: text;
 }
 
 .task-card.editing .priority-tag:hover {
