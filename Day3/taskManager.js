@@ -20,12 +20,12 @@ function openModal(columnType) {
     taskModal.classList.add("active");
     inputTitle.focus();
 
-    // Reset modal character and word counters
+    // Reset modal character counters
     const titleCharCount = document.getElementById("titleCharCount");
     if (titleCharCount) titleCharCount.innerText = "0/100";
     
-    const descWordCount = document.getElementById("descWordCount");
-    if (descWordCount) descWordCount.innerText = "0/100 words";
+    const descCharCount = document.getElementById("descCharCount");
+    if (descCharCount) descCharCount.innerText = "0/100";
 }
 
 function closeModal() {
@@ -79,15 +79,12 @@ taskForm.addEventListener("submit", (e) => {
     let priority = inputPriority.value;
     let targetColType = taskColumnId.value || "todo";
 
-    // Validation
+    // Validation (silent truncation fallback, inputs are capped at 100 chars max)
     if (title.length > 100) {
-        alert("Title cannot exceed 100 characters.");
-        return;
+        title = title.substring(0, 100);
     }
-    const descWords = desc.split(/\s+/).filter(w => w.length > 0);
-    if (descWords.length > 100) {
-        alert("Description cannot exceed 100 words.");
-        return;
+    if (desc.length > 100) {
+        desc = desc.substring(0, 100);
     }
 
     // 2. Generate today's date dynamically (e.g. "Jun 27, 2026")
@@ -158,15 +155,14 @@ function editCard(card) {
     titleCounter.innerText = `${title.innerText.length}/100`;
     titleCounter.style.display = "block";
 
-    // Show/create Description Word Counter
-    let descCounter = card.querySelector(".desc-word-counter");
+    // Show/create Description Character Counter
+    let descCounter = card.querySelector(".desc-char-counter");
     if (!descCounter) {
         descCounter = document.createElement("span");
-        descCounter.className = "desc-word-counter";
+        descCounter.className = "desc-char-counter";
         desc.parentNode.insertBefore(descCounter, desc.nextSibling);
     }
-    const descWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
-    descCounter.innerText = `${descWords.length}/100 words`;
+    descCounter.innerText = `${desc.innerText.length}/100`;
     descCounter.style.display = "block";
 }
 
@@ -188,10 +184,9 @@ function saveCard(card) {
         title.innerText = titleText;
     }
 
-    // Silent truncation for Description (max 100 words)
-    const descWords = descText.split(/\s+/).filter(w => w.length > 0);
-    if (descWords.length > 100) {
-        descText = descWords.slice(0, 100).join(" ");
+    // Silent truncation for Description (max 100 characters)
+    if (descText.length > 100) {
+        descText = descText.substring(0, 100);
         desc.innerText = descText;
     }
 
@@ -207,7 +202,7 @@ function saveCard(card) {
     const titleCounter = card.querySelector(".title-char-counter");
     if (titleCounter) titleCounter.style.display = "none";
 
-    const descCounter = card.querySelector(".desc-word-counter");
+    const descCounter = card.querySelector(".desc-char-counter");
     if (descCounter) descCounter.style.display = "none";
 
     return true;
@@ -378,56 +373,10 @@ inputTitle.addEventListener("input", () => {
     }
 });
 
-inputDesc.addEventListener("keydown", (e) => {
-    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape"];
-    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
-        return;
-    }
-
-    const descWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
-    if (descWords.length >= 100) {
-        const selection = window.getSelection();
-        const selectedText = selection ? selection.toString() : "";
-        if (!selectedText) {
-            if (e.key === " " || e.key === "Enter") {
-                e.preventDefault();
-            }
-        }
-    }
-});
-
 inputDesc.addEventListener("input", () => {
-    const descWordCount = document.getElementById("descWordCount");
-    const descWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
-    if (descWordCount) {
-        descWordCount.innerText = `${descWords.length}/100 words`;
-    }
-});
-
-inputDesc.addEventListener("paste", (e) => {
-    e.preventDefault();
-    const text = (e.clipboardData || window.clipboardData).getData('text');
-    const selection = window.getSelection();
-    const selectedText = selection ? selection.toString() : "";
-    
-    const descWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
-    const currentWordCount = descWords.length;
-    const remainingWords = 100 - (currentWordCount - (selectedText.trim().split(/\s+/).filter(w => w.length > 0).length));
-    if (remainingWords > 0) {
-        const wordsInPaste = text.trim().split(/\s+/).filter(w => w.length > 0);
-        const allowedPasteWords = wordsInPaste.slice(0, remainingWords).join(" ");
-        
-        const start = inputDesc.selectionStart;
-        const end = inputDesc.selectionEnd;
-        const val = inputDesc.value;
-        inputDesc.value = val.substring(0, start) + allowedPasteWords + val.substring(end);
-        inputDesc.selectionStart = inputDesc.selectionEnd = start + allowedPasteWords.length;
-        
-        const descWordCount = document.getElementById("descWordCount");
-        const updatedWords = inputDesc.value.trim().split(/\s+/).filter(w => w.length > 0);
-        if (descWordCount) {
-            descWordCount.innerText = `${updatedWords.length}/100 words`;
-        }
+    const descCharCount = document.getElementById("descCharCount");
+    if (descCharCount) {
+        descCharCount.innerText = `${inputDesc.value.length}/100`;
     }
 });
 
@@ -444,10 +393,9 @@ board.addEventListener("input", (e) => {
         }
     } else if (e.target.classList.contains("task-desc")) {
         const desc = e.target;
-        const descWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
-        const descCounter = card.querySelector(".desc-word-counter");
+        const descCounter = card.querySelector(".desc-char-counter");
         if (descCounter) {
-            descCounter.innerText = `${descWords.length}/100 words`;
+            descCounter.innerText = `${desc.innerText.length}/100`;
         }
     }
 });
@@ -456,13 +404,13 @@ board.addEventListener("keydown", (e) => {
     const card = e.target.closest(".task-card");
     if (!card || !card.classList.contains("editing")) return;
 
+    const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape", "Enter"];
+    if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
+        return;
+    }
+
     if (e.target.classList.contains("task-title")) {
         const title = e.target;
-        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape", "Enter"];
-        if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
-            return;
-        }
-
         const selection = window.getSelection();
         const selectedText = selection ? selection.toString() : "";
         if (title.innerText.length - selectedText.length >= 100) {
@@ -470,20 +418,10 @@ board.addEventListener("keydown", (e) => {
         }
     } else if (e.target.classList.contains("task-desc")) {
         const desc = e.target;
-        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape"];
-        if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
-            return;
-        }
-
-        const descWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
-        if (descWords.length >= 100) {
-            const selection = window.getSelection();
-            const selectedText = selection ? selection.toString() : "";
-            if (!selectedText) {
-                if (e.key === " " || e.key === "Enter") {
-                    e.preventDefault();
-                }
-            }
+        const selection = window.getSelection();
+        const selectedText = selection ? selection.toString() : "";
+        if (desc.innerText.length - selectedText.length >= 100) {
+            e.preventDefault();
         }
     }
 });
@@ -492,44 +430,23 @@ board.addEventListener("paste", (e) => {
     const card = e.target.closest(".task-card");
     if (!card || !card.classList.contains("editing")) return;
 
-    if (e.target.classList.contains("task-title")) {
+    if (e.target.classList.contains("task-title") || e.target.classList.contains("task-desc")) {
         e.preventDefault();
-        const title = e.target;
+        const element = e.target;
         const text = (e.clipboardData || window.clipboardData).getData('text');
         const selection = window.getSelection();
         const selectedText = selection ? selection.toString() : "";
-        const currentLength = title.innerText.length - selectedText.length;
+        const currentLength = element.innerText.length - selectedText.length;
         const remaining = 100 - currentLength;
         if (remaining > 0) {
             const truncated = text.substring(0, remaining);
             document.execCommand("insertText", false, truncated);
             
-            const titleCounter = card.querySelector(".title-char-counter");
-            if (titleCounter) {
-                titleCounter.innerText = `${title.innerText.length}/100`;
-            }
-        }
-    } else if (e.target.classList.contains("task-desc")) {
-        e.preventDefault();
-        const desc = e.target;
-        const text = (e.clipboardData || window.clipboardData).getData('text');
-        const selection = window.getSelection();
-        const selectedText = selection ? selection.toString() : "";
-        
-        const currentText = desc.innerText;
-        const wordsInPaste = text.trim().split(/\s+/).filter(w => w.length > 0);
-        const wordsInDesc = currentText.trim().split(/\s+/).filter(w => w.length > 0);
-        const selectedWordsLength = selectedText.trim().split(/\s+/).filter(w => w.length > 0).length;
-        
-        const remainingWords = 100 - (wordsInDesc.length - selectedWordsLength);
-        if (remainingWords > 0) {
-            const allowedPasteWords = wordsInPaste.slice(0, remainingWords).join(" ");
-            document.execCommand("insertText", false, allowedPasteWords);
-            
-            const descCounter = card.querySelector(".desc-word-counter");
-            if (descCounter) {
-                const updatedWords = desc.innerText.trim().split(/\s+/).filter(w => w.length > 0);
-                descCounter.innerText = `${updatedWords.length}/100 words`;
+            const isTitle = element.classList.contains("task-title");
+            const counterSelector = isTitle ? ".title-char-counter" : ".desc-char-counter";
+            const counter = card.querySelector(counterSelector);
+            if (counter) {
+                counter.innerText = `${element.innerText.length}/100`;
             }
         }
     }
