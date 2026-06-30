@@ -57,9 +57,15 @@
             <i class="fa-regular fa-folder-open"></i> All Tasks <i class="fa-solid fa-chevron-down arrow-icon"></i>
           </button>
         </div>
-        <button class="toolbar-btn">
+        <div class="toolbar-btn filter-wrapper">
           <i class="fa-solid fa-sliders"></i> Filter
-        </button>
+          <select id="priorityFilter" class="filter-select">
+            <option value="all">All</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
       </div>
       <div class="toolbar-right">
         <div class="view-toggle">

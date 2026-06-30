@@ -109,6 +109,8 @@ taskForm.addEventListener("submit", (e) => {
 
     // 5. Append card to list and close the modal
     taskList.appendChild(taskCard);
+    applyFilters();
+
     closeModal();
 });
 // Helper function to put a card in Edit Mode
@@ -274,23 +276,27 @@ function getDragAfterElement(container, y) {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
+
+
 const search = document.querySelector(".search-input");
-search.addEventListener("input", (e) => {
-
+const priorityFilter = document.querySelector("#priorityFilter");
+function applyFilters() {
+    const query = search.value.toLowerCase().trim();
+    const selected = priorityFilter.value;
     const cards = document.querySelectorAll(".task-card");
-    const query = e.target.value.toLowerCase().trim();
-    cards.forEach((card) => {
-
-        const taskTitle = card.querySelector(".task-title").innerText.toLowerCase();
-        const taskDesc = card.querySelector(".task-desc").innerText.toLowerCase();
-        const isMatch = taskTitle.includes(query) || taskDesc.includes(query);
-        if (isMatch) {
+    cards.forEach(card => {
+        const titleText = card.querySelector(".task-title").innerText.toLowerCase();
+        const descText = card.querySelector(".task-desc").innerText.toLowerCase();
+        const tag = card.querySelector(".priority-tag");
+        const searchMatch = titleText.includes(query) || descText.includes(query);
+        const priorityMatch = selected === "all" || tag.classList.contains(selected);
+        if (searchMatch && priorityMatch) {
             card.style.display = "";
         }
         else {
             card.style.display = "none";
         }
     });
-})
-
-
+}
+search.addEventListener("input", applyFilters);
+priorityFilter.addEventListener("input", applyFilters);

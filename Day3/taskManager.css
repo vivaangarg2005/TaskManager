@@ -834,3 +834,16 @@ button {
   transform: scale(0.98);
   transition: transform var(--transition-fast);
 }
+
+/* Style for inline filter select inside toolbar */
+.filter-select {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  outline: none;
+  margin-left: 4px;
+}
