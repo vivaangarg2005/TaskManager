@@ -368,5 +368,11 @@ function checkEmptyColumns() {
         else {
             emptyMessage.style.display = "none";
         }
+
+        // Dynamically update the count badge in the column header
+        const badge = column.querySelector(".task-count-badge");
+        if (badge) {
+            badge.innerText = cards.length;
+        }
     });
 }
