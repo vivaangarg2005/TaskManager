@@ -466,6 +466,7 @@ button {
 
 .card-content {
   flex-grow: 1;
+  min-width: 0; /* Prevents flex children from stretching the card width */
 }
 
 .task-title {
@@ -474,6 +475,8 @@ button {
   color: var(--text-main);
   margin-bottom: 6px;
   line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .task-desc {
@@ -481,6 +484,8 @@ button {
   color: var(--text-muted);
   line-height: 1.5;
   margin-bottom: 16px;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Highlighted/Active Card Style */
@@ -829,6 +834,9 @@ button {
   border-radius: var(--radius-sm);
   border: 1px dashed var(--color-primary);
   cursor: text;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .task-card.editing .priority-tag:hover {
