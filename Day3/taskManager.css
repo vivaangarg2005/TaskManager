@@ -847,3 +847,16 @@ button {
   outline: none;
   margin-left: 4px;
 }
+
+.no-tasks-message {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: #f8fafc;
+  margin: 12px 0;
+}

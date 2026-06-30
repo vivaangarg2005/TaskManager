@@ -168,7 +168,10 @@ board.addEventListener("click", (e) => {
 
     // 1. Handle Delete Button Click
     if (deleteBtn) {
-        if (card) card.remove();
+        if (card) {
+            card.remove();
+            checkEmptyColumns();
+        }
         return;
     }
 
@@ -241,6 +244,7 @@ board.addEventListener("dragend", (e) => {
     const card = e.target.closest(".task-card");
     if (card) {
         card.classList.remove("dragging");
+        checkEmptyColumns();
     }
 });
 
@@ -297,6 +301,41 @@ function applyFilters() {
             card.style.display = "none";
         }
     });
+    checkEmptyColumns();
 }
 search.addEventListener("input", applyFilters);
 priorityFilter.addEventListener("input", applyFilters);
+
+
+document.querySelectorAll(".board-column").forEach(column => {
+    const taskList = column.querySelector(".task-list");
+
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "no-tasks-message";
+    messageDiv.innerText = "No tasks found";
+
+    taskList.appendChild(messageDiv);
+});
+
+// Run once on load to hide placeholders in columns that already have tasks
+checkEmptyColumns();
+
+function checkEmptyColumns() {
+    document.querySelectorAll(".board-column").forEach(column => {
+        let cnt = 0;
+        const cards = column.querySelectorAll(".task-card");
+        cards.forEach(card => {
+            if (card.style.display != "none") {
+                cnt++;
+            }
+        });
+        
+        const emptyMessage = column.querySelector(".no-tasks-message");
+        if (cnt == 0) {
+            emptyMessage.style.display = "block";
+        }
+        else {
+            emptyMessage.style.display = "none";
+        }
+    });
+}
