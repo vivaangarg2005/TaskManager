@@ -385,17 +385,18 @@ board.addEventListener("input", (e) => {
     const card = e.target.closest(".task-card");
     if (!card || !card.classList.contains("editing")) return;
 
-    if (e.target.classList.contains("task-title")) {
-        const title = e.target;
+    const titleTarget = e.target.closest(".task-title");
+    const descTarget = e.target.closest(".task-desc");
+
+    if (titleTarget) {
         const titleCounter = card.querySelector(".title-char-counter");
         if (titleCounter) {
-            titleCounter.innerText = `${title.innerText.length}/100`;
+            titleCounter.innerText = `${titleTarget.innerText.length}/100`;
         }
-    } else if (e.target.classList.contains("task-desc")) {
-        const desc = e.target;
+    } else if (descTarget) {
         const descCounter = card.querySelector(".desc-char-counter");
         if (descCounter) {
-            descCounter.innerText = `${desc.innerText.length}/100`;
+            descCounter.innerText = `${descTarget.innerText.length}/100`;
         }
     }
 });
@@ -404,23 +405,26 @@ board.addEventListener("keydown", (e) => {
     const card = e.target.closest(".task-card");
     if (!card || !card.classList.contains("editing")) return;
 
+    const titleTarget = e.target.closest(".task-title");
+    const descTarget = e.target.closest(".task-desc");
+
+    if (!titleTarget && !descTarget) return;
+
     const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Tab", "Escape", "Enter"];
     if (allowedKeys.includes(e.key) || e.ctrlKey || e.metaKey) {
         return;
     }
 
-    if (e.target.classList.contains("task-title")) {
-        const title = e.target;
+    if (titleTarget) {
         const selection = window.getSelection();
         const selectedText = selection ? selection.toString() : "";
-        if (title.innerText.length - selectedText.length >= 100) {
+        if (titleTarget.innerText.length - selectedText.length >= 100) {
             e.preventDefault();
         }
-    } else if (e.target.classList.contains("task-desc")) {
-        const desc = e.target;
+    } else if (descTarget) {
         const selection = window.getSelection();
         const selectedText = selection ? selection.toString() : "";
-        if (desc.innerText.length - selectedText.length >= 100) {
+        if (descTarget.innerText.length - selectedText.length >= 100) {
             e.preventDefault();
         }
     }
@@ -430,23 +434,26 @@ board.addEventListener("paste", (e) => {
     const card = e.target.closest(".task-card");
     if (!card || !card.classList.contains("editing")) return;
 
-    if (e.target.classList.contains("task-title") || e.target.classList.contains("task-desc")) {
+    const titleTarget = e.target.closest(".task-title");
+    const descTarget = e.target.closest(".task-desc");
+    const targetElement = titleTarget || descTarget;
+
+    if (targetElement) {
         e.preventDefault();
-        const element = e.target;
         const text = (e.clipboardData || window.clipboardData).getData('text');
         const selection = window.getSelection();
         const selectedText = selection ? selection.toString() : "";
-        const currentLength = element.innerText.length - selectedText.length;
+        const currentLength = targetElement.innerText.length - selectedText.length;
         const remaining = 100 - currentLength;
         if (remaining > 0) {
             const truncated = text.substring(0, remaining);
             document.execCommand("insertText", false, truncated);
             
-            const isTitle = element.classList.contains("task-title");
+            const isTitle = (targetElement === titleTarget);
             const counterSelector = isTitle ? ".title-char-counter" : ".desc-char-counter";
             const counter = card.querySelector(counterSelector);
             if (counter) {
-                counter.innerText = `${element.innerText.length}/100`;
+                counter.innerText = `${targetElement.innerText.length}/100`;
             }
         }
     }
