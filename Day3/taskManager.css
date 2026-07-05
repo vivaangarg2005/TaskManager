@@ -216,6 +216,10 @@ button {
   background-color: var(--color-primary-light);
 }
 
+[data-theme="dark"] .nav-item.active {
+  color: #60a5fa; /* High contrast light blue text for dark theme navigation active state */
+}
+
 /* Header Right - Search, Notification, Profile */
 .search-wrapper {
   position: relative;
@@ -945,13 +949,15 @@ button {
   font-weight: 600;
   color: var(--text-main);
   width: auto;
+  outline: none;
 }
 
 .filter-dropdown .dropdown-trigger:focus,
 .filter-dropdown.active .dropdown-trigger {
-  background: transparent;
-  box-shadow: none;
-  border-color: transparent;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  outline: none !important;
 }
 
 .filter-dropdown .dropdown-options {
@@ -1050,4 +1056,8 @@ button {
   background-color: var(--color-primary-light);
   color: var(--color-primary);
   font-weight: 600;
+}
+
+[data-theme="dark"] .option-item.active {
+  color: #60a5fa; /* Higher contrast light blue text for dark theme primary-light backgrounds */
 }
