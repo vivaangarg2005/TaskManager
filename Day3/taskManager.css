@@ -155,7 +155,9 @@ button {
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-color);
 }
-
+.fa-chevron-down {
+  margin-left: 6px;
+}
 .header-left,
 .header-right {
   display: flex;
