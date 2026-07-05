@@ -327,12 +327,17 @@ board.addEventListener("keydown", (e) => {
 
 // 2. Drag Start and Drag End events on the board (Event Delegation)
 board.addEventListener("dragstart", (e) => {
+    // Auto-save any active editing card on drag start
+    const editingCard = document.querySelector(".task-card.editing");
+    if (editingCard) {
+        saveCard(editingCard);
+    }
+
     const card = e.target.closest(".task-card");
     // Make sure we aren't dragging inputs/buttons inside the card
     if (card && !card.classList.contains("editing")) {
         card.classList.add("dragging");
     }
-
 });
 
 board.addEventListener("dragend", (e) => {
