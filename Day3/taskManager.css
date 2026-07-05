@@ -938,6 +938,16 @@ button {
   cursor: pointer;
   outline: none;
   margin-left: 4px;
+  color-scheme: light;
+}
+
+[data-theme="dark"] .filter-select {
+  color-scheme: dark;
+}
+
+.filter-select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
 }
 
 .no-tasks-message {
