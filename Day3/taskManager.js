@@ -400,7 +400,6 @@ function applyFilters() {
     checkEmptyColumns();
 }
 search.addEventListener("input", applyFilters);
-priorityFilter.addEventListener("input", applyFilters);
 
 // --- MODAL COUNTERS AND INPUT LIMITS ---
 inputTitle.addEventListener("input", () => {
@@ -620,7 +619,7 @@ function loadTasksFromLocalStorage() {
 // Initial task load
 loadTasksFromLocalStorage();
 
-// Custom Dropdown Event Listeners
+// Custom Dropdown Event Listeners (Priority Form Select)
 const priorityDropdown = document.getElementById("priorityDropdown");
 const dropdownTrigger = document.getElementById("dropdownTrigger");
 const dropdownOptions = document.getElementById("dropdownOptions");
@@ -630,6 +629,8 @@ const hiddenInputPriority = document.getElementById("inputPriority");
 if (dropdownTrigger) {
     dropdownTrigger.addEventListener("click", (e) => {
         e.stopPropagation();
+        // Close other dropdowns first
+        if (filterDropdown) filterDropdown.classList.remove("active");
         if (priorityDropdown) {
             priorityDropdown.classList.toggle("active");
         }
@@ -661,9 +662,57 @@ if (dropdownOptions) {
     });
 }
 
-// Close custom dropdown on click outside
+// Custom Dropdown Event Listeners (Priority Toolbar Filter)
+const filterDropdown = document.getElementById("filterDropdown");
+const filterTrigger = document.getElementById("filterTrigger");
+const filterOptions = document.getElementById("filterOptions");
+const filterSelectedVal = document.querySelector("#filterTrigger .selected-val");
+
+if (filterTrigger) {
+    filterTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        // Close other dropdowns first
+        if (priorityDropdown) priorityDropdown.classList.remove("active");
+        if (filterDropdown) {
+            filterDropdown.classList.toggle("active");
+        }
+    });
+}
+
+if (filterOptions) {
+    filterOptions.querySelectorAll(".option-item").forEach(option => {
+        option.addEventListener("click", () => {
+            const val = option.getAttribute("data-value");
+            const text = option.innerText;
+
+            if (priorityFilter) {
+                priorityFilter.value = val;
+            }
+
+            if (filterSelectedVal) {
+                filterSelectedVal.innerText = text;
+                filterSelectedVal.setAttribute("data-value", val);
+            }
+
+            filterOptions.querySelectorAll(".option-item").forEach(opt => opt.classList.remove("active"));
+            option.classList.add("active");
+
+            if (filterDropdown) {
+                filterDropdown.classList.remove("active");
+            }
+
+            // Manually re-apply filters since hidden input doesn't trigger "input" event
+            applyFilters();
+        });
+    });
+}
+
+// Close custom dropdowns on click outside
 document.addEventListener("click", (e) => {
     if (priorityDropdown && !priorityDropdown.contains(e.target)) {
         priorityDropdown.classList.remove("active");
+    }
+    if (filterDropdown && !filterDropdown.contains(e.target)) {
+        filterDropdown.classList.remove("active");
     }
 });

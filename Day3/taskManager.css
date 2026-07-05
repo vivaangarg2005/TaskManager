@@ -927,27 +927,33 @@ button {
   transition: transform var(--transition-fast);
 }
 
-/* Style for inline filter select inside toolbar */
-.filter-select {
+/* Filter Custom Dropdown Specific Styles */
+.filter-dropdown {
+  width: auto;
+  display: inline-block;
+}
+
+.filter-dropdown .dropdown-trigger {
   border: none;
   background: transparent;
-  color: inherit;
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  cursor: pointer;
-  outline: none;
-  margin-left: 4px;
-  color-scheme: light;
-}
-
-[data-theme="dark"] .filter-select {
-  color-scheme: dark;
-}
-
-.filter-select option {
-  background-color: var(--bg-card);
+  padding: 0 4px;
+  box-shadow: none;
+  font-weight: 600;
   color: var(--text-main);
+  width: auto;
+}
+
+.filter-dropdown .dropdown-trigger:focus,
+.filter-dropdown.active .dropdown-trigger {
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.filter-dropdown .dropdown-options {
+  min-width: 140px;
+  width: max-content;
+  top: calc(100% + 10px);
 }
 
 .no-tasks-message {

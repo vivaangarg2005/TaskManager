@@ -59,13 +59,20 @@
     <section class="toolbar">
       <div class="toolbar-left">
         <div class="toolbar-btn filter-wrapper">
-          <i class="fa-solid fa-sliders"></i> Filter
-          <select id="priorityFilter" class="filter-select">
-            <option value="all">All Priority</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
+          <i class="fa-solid fa-sliders"></i> Filter:
+          <div class="custom-dropdown filter-dropdown" id="filterDropdown">
+            <button type="button" class="dropdown-trigger" id="filterTrigger">
+              <span class="selected-val" data-value="all">All Priority</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-options" id="filterOptions">
+              <div class="option-item active" data-value="all">All Priority</div>
+              <div class="option-item" data-value="high">High</div>
+              <div class="option-item" data-value="medium">Medium</div>
+              <div class="option-item" data-value="low">Low</div>
+            </div>
+          </div>
+          <input type="hidden" id="priorityFilter" value="all">
         </div>
       </div>
     </section>
