@@ -12,7 +12,6 @@ const taskColumnId = document.getElementById("taskColumnId");
 // Select Board buttons
 const addButtons = document.querySelectorAll(".add-task-btn");
 const floatingNewTaskBtn = document.querySelector(".floating-new-task-btn");
-const taskCard = document.querySelectorAll(".task-card");
 
 // Function to open modal and set target column
 function openModal(columnType) {
@@ -32,6 +31,32 @@ function closeModal() {
     taskModal.classList.remove("active");
     taskForm.reset();
     taskColumnId.value = "";
+
+    // Reset custom dropdown state
+    const priorityDropdown = document.getElementById("priorityDropdown");
+    const selectedVal = document.querySelector("#dropdownTrigger .selected-val");
+    const hiddenInputPriority = document.getElementById("inputPriority");
+    const dropdownOptions = document.getElementById("dropdownOptions");
+
+    if (priorityDropdown) {
+        priorityDropdown.classList.remove("active");
+    }
+    if (selectedVal) {
+        selectedVal.innerText = "Low";
+        selectedVal.setAttribute("data-value", "low");
+    }
+    if (hiddenInputPriority) {
+        hiddenInputPriority.value = "low";
+    }
+    if (dropdownOptions) {
+        dropdownOptions.querySelectorAll(".option-item").forEach(opt => {
+            if (opt.getAttribute("data-value") === "low") {
+                opt.classList.add("active");
+            } else {
+                opt.classList.remove("active");
+            }
+        });
+    }
 }
 
 // Attach open handlers to all column "+ Add Task" buttons
@@ -69,6 +94,41 @@ taskModal.addEventListener("click", (e) => {
     }
 });
 
+// Function to dynamically create a task card in the DOM
+function createTaskCardDOM(title, desc, priority, date, columnId) {
+    let targetColumn = document.querySelector(`.${columnId}-column`);
+    if (!targetColumn) return null;
+    let taskList = targetColumn.querySelector(".task-list");
+
+    let taskCard = document.createElement("div");
+    taskCard.className = "task-card";
+    taskCard.setAttribute("draggable", "true");
+    
+    // Capitalize priority for display text
+    const displayPriority = priority.charAt(0).toUpperCase() + priority.slice(1);
+
+    taskCard.innerHTML = `
+        <div class="card-drag-handle">
+            <i class="fa-solid fa-grip-vertical"></i>
+        </div>
+        <div class="card-content">
+            <h3 class="task-title">${title}</h3>
+            <p class="task-desc">${desc}</p>
+            <div class="card-footer">
+                <span class="priority-tag ${priority}">${displayPriority}</span>
+                <span class="task-date"><i class="fa-regular fa-calendar"></i> ${date}</span>
+                <div class="card-actions">
+                    <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
+                    <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    taskList.appendChild(taskCard);
+    return taskCard;
+}
+
 // Handle Form Submission (Adding the new task card)
 taskForm.addEventListener("submit", (e) => {
     e.preventDefault(); // Prevent standard browser page reload on submit
@@ -95,36 +155,13 @@ taskForm.addEventListener("submit", (e) => {
         year: "numeric"
     });
 
-    // 3. Select target task list based on targetColType
-    let targetColumn = document.querySelector(`.${targetColType}-column`);
-    let taskList = targetColumn.querySelector(".task-list");
-
-    // 4. Create the task card element
-    let taskCard = document.createElement("div");
-    taskCard.className = "task-card";
-    taskCard.setAttribute("draggable", "true");
-    taskCard.innerHTML = `
-        <div class="card-drag-handle">
-            <i class="fa-solid fa-grip-vertical"></i>
-        </div>
-        <div class="card-content">
-            <h3 class="task-title">${title}</h3>
-            <p class="task-desc">${desc}</p>
-            <div class="card-footer">
-                <span class="priority-tag ${priority}">${priority}</span>
-                <span class="task-date"><i class="fa-regular fa-calendar"></i> ${formattedDate}</span>
-                <div class="card-actions">
-                    <button class="action-btn edit-btn" title="Edit Task"><i class="fa-solid fa-pencil"></i></button>
-                    <button class="action-btn delete-btn" title="Delete Task"><i class="fa-solid fa-trash"></i></button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // 5. Append card to list and close the modal
-    taskList.appendChild(taskCard);
+    // 3. Create and append the card
+    createTaskCardDOM(title, desc, priority, formattedDate, targetColType);
+    
+    // Save to LocalStorage
+    saveTasksToLocalStorage();
+    
     applyFilters();
-
     closeModal();
 });
 // Helper function to put a card in Edit Mode
@@ -205,6 +242,9 @@ function saveCard(card) {
     const descCounter = card.querySelector(".desc-char-counter");
     if (descCounter) descCounter.style.display = "none";
 
+    // Save state to LocalStorage
+    saveTasksToLocalStorage();
+
     return true;
 }
 
@@ -229,6 +269,7 @@ board.addEventListener("click", (e) => {
         if (card) {
             card.remove();
             checkEmptyColumns();
+            saveTasksToLocalStorage();
         }
         return;
     }
@@ -284,11 +325,6 @@ board.addEventListener("keydown", (e) => {
 
 // --- DRAG AND DROP FUNCTIONALITY ---
 
-// 1. Make existing cards draggable on script load
-document.querySelectorAll(".task-card").forEach(card => {
-    card.setAttribute("draggable", "true");
-});
-
 // 2. Drag Start and Drag End events on the board (Event Delegation)
 board.addEventListener("dragstart", (e) => {
     const card = e.target.closest(".task-card");
@@ -304,6 +340,7 @@ board.addEventListener("dragend", (e) => {
     if (card) {
         card.classList.remove("dragging");
         checkEmptyColumns();
+        saveTasksToLocalStorage();
     }
 });
 
@@ -497,3 +534,136 @@ function checkEmptyColumns() {
         }
     });
 }
+
+// Theme Toggle Functionality
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+// Check if dark theme was previously selected
+const savedTheme = localStorage.getItem("theme") || "light";
+if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+    if (themeToggleBtn) {
+        const icon = themeToggleBtn.querySelector("i");
+        if (icon) {
+            icon.className = "fa-solid fa-sun";
+        }
+    }
+}
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+        const currentTheme = document.documentElement.getAttribute("data-theme");
+        const icon = themeToggleBtn.querySelector("i");
+        
+        if (currentTheme === "dark") {
+            document.documentElement.removeAttribute("data-theme");
+            localStorage.setItem("theme", "light");
+            if (icon) {
+                icon.className = "fa-regular fa-moon";
+            }
+        } else {
+            document.documentElement.setAttribute("data-theme", "dark");
+            localStorage.setItem("theme", "dark");
+            if (icon) {
+                icon.className = "fa-solid fa-sun";
+            }
+        }
+    });
+}
+
+// LocalStorage task serialization
+function saveTasksToLocalStorage() {
+    const tasks = [];
+    document.querySelectorAll(".board-column").forEach(column => {
+        let columnId = "todo";
+        if (column.classList.contains("progress-column")) {
+            columnId = "progress";
+        } else if (column.classList.contains("done-column")) {
+            columnId = "done";
+        }
+
+        column.querySelectorAll(".task-card").forEach(card => {
+            const title = card.querySelector(".task-title").innerText.trim();
+            const desc = card.querySelector(".task-desc").innerText.trim();
+            const priorityTag = card.querySelector(".priority-tag");
+            let priority = "low";
+            if (priorityTag.classList.contains("high")) {
+                priority = "high";
+            } else if (priorityTag.classList.contains("medium")) {
+                priority = "medium";
+            }
+            const date = card.querySelector(".task-date").innerText.trim();
+
+            tasks.push({ title, desc, priority, date, columnId });
+        });
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+function loadTasksFromLocalStorage() {
+    const tasksData = localStorage.getItem("tasks");
+    if (!tasksData) return; // Keep default template tasks if none stored
+    
+    // Clear initial template tasks
+    document.querySelectorAll(".board-column .task-list").forEach(list => {
+        list.querySelectorAll(".task-card").forEach(card => card.remove());
+    });
+
+    const tasks = JSON.parse(tasksData);
+    tasks.forEach(task => {
+        createTaskCardDOM(task.title, task.desc, task.priority, task.date, task.columnId);
+    });
+
+    checkEmptyColumns();
+}
+
+// Initial task load
+loadTasksFromLocalStorage();
+
+// Custom Dropdown Event Listeners
+const priorityDropdown = document.getElementById("priorityDropdown");
+const dropdownTrigger = document.getElementById("dropdownTrigger");
+const dropdownOptions = document.getElementById("dropdownOptions");
+const selectedVal = document.querySelector("#dropdownTrigger .selected-val");
+const hiddenInputPriority = document.getElementById("inputPriority");
+
+if (dropdownTrigger) {
+    dropdownTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (priorityDropdown) {
+            priorityDropdown.classList.toggle("active");
+        }
+    });
+}
+
+if (dropdownOptions) {
+    dropdownOptions.querySelectorAll(".option-item").forEach(option => {
+        option.addEventListener("click", () => {
+            const val = option.getAttribute("data-value");
+            const text = option.innerText;
+
+            if (hiddenInputPriority) {
+                hiddenInputPriority.value = val;
+            }
+
+            if (selectedVal) {
+                selectedVal.innerText = text;
+                selectedVal.setAttribute("data-value", val);
+            }
+
+            dropdownOptions.querySelectorAll(".option-item").forEach(opt => opt.classList.remove("active"));
+            option.classList.add("active");
+
+            if (priorityDropdown) {
+                priorityDropdown.classList.remove("active");
+            }
+        });
+    });
+}
+
+// Close custom dropdown on click outside
+document.addEventListener("click", (e) => {
+    if (priorityDropdown && !priorityDropdown.contains(e.target)) {
+        priorityDropdown.classList.remove("active");
+    }
+});
